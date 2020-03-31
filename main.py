@@ -104,6 +104,8 @@ if r.status_code == 200:
                         checker -= 1
                         if checker == 0:
                             break
-                print({'day': date, 'total': total, 'new': new, 'persons': persons})
+                # print({'day': date, 'total': total, 'new': new, 'persons': persons})
+                open('{}.json'.format(str(date)), 'w').write(str({'day': date, 'total': total, 'new': new, 'persons': persons}))
+
         except IndexError:
             logger.debug('An index error has been found')

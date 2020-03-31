@@ -6,9 +6,16 @@ from logging.handlers import RotatingFileHandler
 from bs4 import BeautifulSoup
 from htmldom import htmldom
 from minsap.HTMLParser import strip_tags
-from requests import get
+import requests
+import json
 
 import os.path
+
+PARSER = 'lxml'
+try:
+    import lxml
+except ImportError:
+    PARSER = 'html.parser'
 
 entries = [
     {'name': 'cubadata', 'url': 'https://covid19cubadata.github.io/data/covid19-cuba.json'},
@@ -26,16 +33,17 @@ logger.debug('Started Sync')
 
 url = 'https://salud.msp.gob.cu/'
 logger.debug('Requesting ' + url)
-r = get(url)
+session = requests.Session()
+r = session.get(url)
 if r.status_code == 200:
     content = r.content.decode('utf-8').replace('\n', ' ').replace('&nbsp;', ' ')
-    soup = BeautifulSoup(content, 'html.parser')
+    soup = BeautifulSoup(content, PARSER)
     posts = soup.find_all('article')
     for post in posts:
         url = post.find('a')['href']
         try:
             logger.debug('Requesting ' + url)
-            r = get(url)
+            r = session.get(url)
             if r.status_code == 200:
                 dom = htmldom.HtmlDom()
                 dom.createDom(r.content.decode('utf-8').replace('\n', ' ').replace('&nbsp;', ' '))
@@ -112,7 +120,8 @@ if r.status_code == 200:
                         if checker == 0:
                             break
                 # print({'day': date, 'total': total, 'new': new, 'persons': persons})
-                open('{}.json'.format(str(date)), 'w').write(str({'day': date, 'total': total, 'new': new, 'persons': persons}))
+                #open('{}.json'.format(str(date)), 'w').write(str({'day': date, 'total': total, 'new': new, 'persons': persons})
+                json.dump({'day': date, 'total': total, 'new': new, 'persons': persons},open('{}.json'.format(str(date)), 'w'))
 
         except IndexError:
             logger.debug('An index error has been found')

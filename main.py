@@ -8,6 +8,8 @@ from htmldom import htmldom
 from minsap.HTMLParser import strip_tags
 from requests import get
 
+import os.path
+
 entries = [
     {'name': 'cubadata', 'url': 'https://covid19cubadata.github.io/data/covid19-cuba.json'},
     {'name': 'timeseries', 'url': 'https://pomber.github.io/covid19/timeseries.json'}
@@ -51,6 +53,11 @@ if r.status_code == 200:
                         month = 4
                     year = exp.group('year')
                     date = str(year) + '-' + str(month) + '-' + str(day)
+
+                    # Si existe el fichero ya el parte se ha registrado
+                    if os.path.isfile('{}.json'.format(str(date))):
+                        logger.debug('{}.json'.format(str(date)) + ' exist, continue')
+                        continue
 
                 new = total = 0
                 entries = dom.find('div.themeform').find('p')
@@ -104,6 +111,8 @@ if r.status_code == 200:
                         checker -= 1
                         if checker == 0:
                             break
-                print({'day': date, 'total': total, 'new': new, 'persons': persons})
+                # print({'day': date, 'total': total, 'new': new, 'persons': persons})
+                open('{}.json'.format(str(date)), 'w').write(str({'day': date, 'total': total, 'new': new, 'persons': persons}))
+
         except IndexError:
             logger.debug('An index error has been found')

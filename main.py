@@ -31,7 +31,7 @@ logger.debug('Started Sync')
 
 if __name__ == "__main__":
     url = 'https://salud.msp.gob.cu/'
-    logger.debug('Requesting ' + url)
+    logger.debug(f'Requesting {url}')
     session = requests.Session()
     r = session.get(url)
     if r.status_code == 200:
@@ -42,7 +42,7 @@ if __name__ == "__main__":
         for post in posts:
             url = post.find('a')['href']
             try:
-                logger.debug('Requesting ' + url)
+                logger.debug(f'Requesting {url}')
                 r = session.get(url)
                 if r.status_code == 200:
                     dom = htmldom.HtmlDom()
@@ -55,8 +55,7 @@ if __name__ == "__main__":
 
                     # Si existe el fichero ya el parte se ha registrado
                     if record_exist(date):
-                        logger.debug('{}.json'.format(
-                            str(date)) + ' exist, continue')
+                        logger.debug(f'"{str(date)}.json" exist, continue')
                         continue
 
                     entries = dom.find('div.themeform').find('p')

@@ -66,7 +66,7 @@ def parse_confirmed_total(entries):
         exp = re.search('acumulado de (?P<total>[0-9]+)', content)
         total = exp.group('total') if exp else total
 
-    if not re.match('[0-9]+', new):
+    if not re.match('[0-9]+', str(new)):
         new = re.sub(' (nuevo(s)?|caso(s)?)', '', new)
         new = NUMBERS.get(new.lower(), new)
     else:

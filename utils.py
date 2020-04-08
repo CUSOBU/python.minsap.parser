@@ -66,7 +66,7 @@ def parse_confirmed_total(entries):
         exp = re.search('acumulado de (?P<total>[0-9]+)', content)
         total = exp.group('total') if exp else total
 
-    if not re.match('[0-9]+', new):
+    if not re.match('[0-9]+', str(new)):
         new = re.sub(' (nuevo(s)?|caso(s)?)', '', new)
         new = NUMBERS.get(new.lower(), new)
     else:
@@ -84,8 +84,8 @@ def parse_infected_info(entry_raw):
                  'municipality': None, 'contacts': 0, 'origen': content}
         # age
         exp = re.search('(?P<age>[0-9]+) años', content)
-        entry['age'] = exp.group(
-            'age') if exp else entry['age']
+        entry['age'] = int(exp.group(
+            'age')) if exp else entry['age']
         # municipality
         exp = re.search(
             'municipio( de)? (?P<name>[a-zA-ZüñáéíóúÁÉÍÓÚ ]+)', content)
@@ -104,7 +104,7 @@ def parse_infected_info(entry_raw):
         # contacts
         exp = re.search(
             '(?P<contacts>[0-9]+) contactos', content)
-        entry['contacts'] = exp.group(
-            'contacts') if exp else entry['contacts']
+        entry['contacts'] = int(exp.group(
+            'contacts')) if exp else entry['contacts']
         #
         return entry

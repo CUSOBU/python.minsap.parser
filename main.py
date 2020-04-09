@@ -71,6 +71,7 @@ if __name__ == "__main__":
                 store_data(os.path.join(DUMP_DIRECTORY, f'{date}.json'), {
                     'day': date,
                     'total': total,
+                    'diff': checker,
                     'new': new,
                     'persons': persons
                 })

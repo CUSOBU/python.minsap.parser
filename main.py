@@ -12,7 +12,7 @@ from utils import (parse_infected_info,
                    parse_confirmed_total,
                    store_data)
 
-DUMP_DIRECTORY = os.path.join(os.path.dirname(os.path.realpath(__file__)), 'fechas')
+DUMP_DIRECTORY = os.path.join(os.path.dirname(os.path.realpath(__file__)), 'dates')
 PARSER = 'lxml'
 try:
     import lxml
@@ -65,7 +65,7 @@ if __name__ == "__main__":
                     person = parse_infected_info(entry)
                     if person:
                         persons.append(person)
-                    checker -= 1
+                        checker -= 1
                     if checker == 0:
                         break
                 store_data(os.path.join(DUMP_DIRECTORY, f'{date}.json'), {

@@ -1,16 +1,14 @@
-import os
 import html
 import logging
+import os
 import time
-
-import feedparser
-
-from htmldom import htmldom
+from datetime import datetime, timedelta
 from logging.handlers import RotatingFileHandler
 
-from utils import (parse_infected_info,
-                   parse_confirmed_total,
-                   store_data)
+import feedparser
+from htmldom import htmldom
+
+from utils import parse_confirmed_total, parse_infected_info, store_data, validate_title
 
 DUMP_DIRECTORY = os.path.join(os.path.dirname(os.path.realpath(__file__)), 'dates')
 PARSER = 'lxml'
@@ -37,14 +35,16 @@ if __name__ == "__main__":
 
     if news_feed:
         for post in news_feed.entries:
-
             try:
 
                 title = post.title
-                content = post.content[0]['value']
-                date = time.strftime('%Y-%m-%d', post.published_parsed)
+                if not validate_title(title):
+                    continue
 
+                content = post.content[0]['value']
+                date = datetime.strptime(time.strftime('%Y-%m-%d', post.published_parsed), '%Y-%m-%d') - timedelta(days=1)
                 logger.debug(f'Requesting {url}')
+                date = date.strftime("%Y-%m-%d")
 
                 dom = htmldom.HtmlDom()
                 dom.createDom(html.unescape(content.replace('\n', ' ')))
@@ -68,13 +68,7 @@ if __name__ == "__main__":
                         checker -= 1
                     if checker == 0:
                         break
-                store_data(os.path.join(DUMP_DIRECTORY, f'{date}.json'), {
-                    'day': date,
-                    'total': total,
-                    'diff': checker,
-                    'new': new,
-                    'persons': persons
-                })
+                store_data(os.path.join(DUMP_DIRECTORY, f'{date}.json'), {'day': date, 'total': total, 'diff': checker, 'new': new, 'persons': persons})
 
             except IndexError:
                 logger.debug('An index error has been found')

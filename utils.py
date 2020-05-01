@@ -82,7 +82,7 @@ def parse_infected_info(entry_raw):
     content = strip_tags(re.sub(" +", " ", html.unescape(entry_raw.html().replace('\n', ' '))))
     exp = re.search('^( )?Ciudadan(a|o)', content)
     if exp:
-        entry = {'age': 0, 'province': None, 'municipality': None, 'contacts': 0, 'origen': content}
+        entry = {'age': 0, 'gender': 'mujer' if re.search('^( )?Ciudadana', content) else 'hombre', 'province': None, 'municipality': None, 'contacts': 0, 'origen': content}
         # age
         exp = re.search('(?P<age>[0-9]+) años', content)
         entry['age'] = int(exp.group('age')) if exp else entry['age']
@@ -99,9 +99,7 @@ def parse_infected_info(entry_raw):
             if re.search('mismo nombre', entry['province']):
                 entry['province'] = entry['municipality']
         # contacts
-        exp = re.search(
-            '(?P<contacts>[0-9]+) contactos', content)
-        entry['contacts'] = int(exp.group(
-            'contacts')) if exp else entry['contacts']
-        #
+        exp = re.search('(?P<contacts>[0-9]+) contactos', content)
+        entry['contacts'] = int(exp.group('contacts')) if exp else entry['contacts']
+
         return entry
